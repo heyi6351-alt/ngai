@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>六爻起卦 · 甩出运势</title>
+    <style>
+        :root {
+            var-bg-color: #2c2c2c; 
+            --paper-color: #fdf6e3; 
+            --accent-color: #b31d2e; 
+            --text-color: #4a4a4a; 
+            --coin-color: #d4a347; /* 黄铜色 */
+            --coin-dark: #b58e37; /* 暗铜色，用于反面 */
+            --yang-line-color: #333; 
+        }
+
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", serif;
+            background-color: #2c2c2c;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMzMzMzMzMiIGZpbGwtb3BhY2l0eT0iMC4xNSI+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6bTIwIDIwaDIwdjIwSDIWMjB6TTAAyMBoMjB2MjBIMFYyMHoyMCAwaDIwdjIwSDIwVjB6Ii8+PC9nPjwvZz48L3N2Zz4=');
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .container {
+            background-color: var(--paper-color);
+            padding: 25px 20px;
+            border-radius: 4px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border: 1px solid rgba(192, 72, 81, 0.1);
+            position: relative;
+        }
+
+        .container::before, .container::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent-color);
+        }
+        .container::before { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+        .container::after { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+
+        h1 {
+            font-size: 26px;
+            margin-bottom: 5px;
+            color: var(--accent-color);
+            letter-spacing: 3px;
+        }
+
+        p.subtitle {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        /* 卦象展示区 */
+        .hexagram-container {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 12px;
+            margin: 25px 0;
+            min-height: 180px;
+            align-items: center;
+        }
+
+        .yao {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 14px;
+            width: 100%;
+            opacity: 0;
+            transform: scaleX(0.5);
+            animation: yaoAppear 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        @keyframes yaoAppear {
+            to { opacity: 1; transform: scaleX(1); }
+        }
+
+        .yang-line { width: 140px; height: 8px; background-color: var(--yang-line-color); border-radius: 1px; }
+        .yin-line { width: 140px; height: 8px; display: flex; justify-content: space-between; }
+        .yin-part { width: 60px; height: 8px; background-color: var(--yang-line-color); border-radius: 1px; }
+        .yao-mark { margin-left: 20px; font-size: 16px; color: var(--accent-color); font-weight: bold; width: 20px; text-align: left; }
+
+        /* === 全新设计的铜钱区 === */
+        .coin-toss-area {
+            height: 120px;
+            position: relative;
+            margin: 20px 0;
+            perspective: 800px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+        }
+
+        /* 控制铜钱向上抛起的跳动 */
+        .coin-wrapper {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.2); /* 底部阴影 */
+        }
+
+        @keyframes jumpUp {
+            0% { transform: translateY(0) scale(1); box-shadow: 0 5px 10px rgba(0,0,0,0.2); }
+            50% { transform: translateY(-80px) scale(1.1); box-shadow: 0 30px 20px rgba(0,0,0,0.1); }
+            100% { transform: translateY(0) scale(1); box-shadow: 0 5px 10px rgba(0,0,0,0.2); }
+        }
+
+        .coin-wrapper.jumping {
+            animation: jumpUp 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* 控制铜钱的 3D 翻转 */
+        .coin-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* 正反面通用样式 */
+        .coin-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 50%;
+            background-color: var(--coin-color);
+            border: 4px solid #946c21;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5px;
+            box-sizing: border-box;
+            color: #523709;
+        }
+
+        /* 反面样式（预先旋转 180 度，并加深颜色） */
+        .coin-face.back {
+            transform: rotateY(180deg);
+            background-color: var(--coin-dark); 
+        }
+
+        /* 铜钱中间的方孔 */
+        .hole {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 14px;
+            height: 14px;
+            background-color: var(--paper-color);
+            border: 2px solid #946c21;
+        }
+
+        /* 铜钱上的文字 */
+        .coin-text {
+            font-family: "KaiTi", "楷体", serif;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        /* 按钮与结果区 */
+        .action-area { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .btn { background-color: var(--accent-color); color: #fff; border: none; padding: 14px 40px; font-size: 16px; border-radius: 30px; cursor: pointer; transition: all 0.2s; font-weight: bold; box-shadow: 0 6px 0 #8c1624; }
+        .btn:active { box-shadow: 0 2px 0 #8c1624; transform: translateY(4px); }
+        .btn:disabled { background-color: #ccc; box-shadow: 0 4px 0 #999; cursor: not-allowed; }
+
+        #result-area { margin-top: 10px; padding: 20px; background-color: rgba(192, 72, 81, 0.05); border-radius: 4px; display: none; border: 1px dashed var(--accent-color); width: 100%; box-sizing: border-box; }
+        .luck-title { font-size: 22px; font-weight: bold; color: var(--accent-color); margin-bottom: 12px; }
+        .luck-desc { font-size: 15px; line-height: 1.8; color: #555; text-align: justify; }
+        .reset-btn { background-color: transparent; color: var(--accent-color); border: 2px solid var(--accent-color); margin-top: 20px; box-shadow: none; }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper">
+    <div class="container">
+        <h1>六爻起卦</h1>
+        <p class="subtitle">心诚则灵，甩出你的当下运势（共六次）</p>
+
+        <div class="hexagram-container" id="hexagram"></div>
+
+        <div class="coin-toss-area" id="coin-area">
+            <div class="coin-wrapper" id="wrapper-1">
+                <div class="coin-inner" id="inner-1">
+                    <div class="coin-face front"><span class="coin-text">正</span><div class="hole"></div><span class="coin-text">面</span></div>
+                    <div class="coin-face back"><span class="coin-text">反</span><div class="hole"></div><span class="coin-text">面</span></div>
+                </div>
+            </div>
+            <div class="coin-wrapper" id="wrapper-2">
+                <div class="coin-inner" id="inner-2">
+                    <div class="coin-face front"><span class="coin-text">正</span><div class="hole"></div><span class="coin-text">面</span></div>
+                    <div class="coin-face back"><span class="coin-text">反</span><div class="hole"></div><span class="coin-text">面</span></div>
+                </div>
+            </div>
+            <div class="coin-wrapper" id="wrapper-3">
+                <div class="coin-inner" id="inner-3">
+                    <div class="coin-face front"><span class="coin-text">正</span><div class="hole"></div><span class="coin-text">面</span></div>
+                    <div class="coin-face back"><span class="coin-text">反</span><div class="hole"></div><span class="coin-text">面</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-area">
+            <button class="btn" id="toss-btn" onclick="tossCoins()">点击起卦 (0/6)</button>
+            <div id="result-area">
+                <div class="luck-title" id="luck-title"></div>
+                <div class="luck-desc" id="luck-desc"></div>
+                <button class="btn reset-btn" onclick="resetGame()">重新起卦</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let tossCount = 0;
+    let hexagramSum = 0; 
+    let coinRotations = [0, 0, 0]; // 记录三个硬币当前的旋转角度
+
+    const btn = document.getElementById('toss-btn');
+    const hexagramContainer = document.getElementById('hexagram');
+    const resultArea = document.getElementById('result-area');
+    
+    const fortunes = [
+        { title: "卦象判定：大吉", desc: "时来运转，万事顺遂。当前你气场极强，正处于上升期。想做的事、想见的人，不妨大胆去行动。顺应天时，多行善事，收获将远超预期。把握当下，莫负光阴。" },
+        { title: "卦象判定：中吉", desc: "行运稳健，渐入佳境。当前的运势就像一棵正在茁壮成长的树苗，虽然没有惊天动地的爆发，但每天都在进步。保持耐心和专注，按部就班地推进计划，自然会水到渠成。适合稳中求进。" },
+        { title: "卦象判定：小吉", desc: "微风拂面，略有收获。运势平稳中偶有小惊喜。生活中会有一些意料之外的小确幸或小帮助。虽然大事未必能成，但小事大多顺心。适合保持愉快心情，享受当下的平凡生活。" },
+        { title: "卦象判定：平卦", desc: "运势平平，顺其自然。当前状态如古井无波，不进亦不退。无论是工作、感情还是求财，都不宜有过大的动作或盲目冒险。修心养性，积累力量，静待时机才是上策。不求有功，但求无过。" },
+        { title: "卦象判定：小凶", desc: "运势低迷，谨慎行事。可能会遇到一些小的阻碍、挫折或流言蜚语。情绪容易急躁，导致做出错误的判断。当下最重要的是保持冷静，退一步海阔天空。凡事多留个心眼，不轻易许诺，低调为人。" }
+    ];
+
+    function tossCoins() {
+        if (tossCount >= 6) return;
+        btn.disabled = true;
+        btn.innerText = "起卦中...";
+
+        let currentTossSum = 0;
+        const wrappers = [document.getElementById('wrapper-1'), document.getElementById('wrapper-2'), document.getElementById('wrapper-3')];
+        const inners = [document.getElementById('inner-1'), document.getElementById('inner-2'), document.getElementById('inner-3')];
+
+        wrappers.forEach((wrapper, index) => {
+            // 1. 触发向上跳的动画
+            wrapper.classList.remove('jumping');
+            void wrapper.offsetWidth; // 强制浏览器重绘，确保动画能重新播放
+            wrapper.classList.add('jumping');
+
+            // 2. 核心：计算累加翻转角度
+            let isHeads = Math.random() > 0.5; // 正面为 true，反面为 false
+            currentTossSum += isHeads ? 3 : 2; // 正面记3（阳），反面记2（阴）
+
+            let currRot = coinRotations[index];
+            // 找到下一个 360 度的整数倍，再加上 1800 度（保证每次都至少转 5 圈）
+            let baseRot = currRot + 1800 - (currRot % 360); 
+            // 如果是反面，再多转 180 度
+            let targetRot = baseRot + (isHeads ? 0 : 180);
+            
+            coinRotations[index] = targetRot; // 记录新的角度，下次在此基础上继续转
+            
+            // 稍微加一点 X 轴的随机倾斜，看起来更立体
+            let tiltX = Math.floor(Math.random() * 20 - 10); 
+            
+            // 执行 3D 旋转
+            inners[index].style.transform = `rotateX(${tiltX}deg) rotateY(${targetRot}deg)`;
+        });
+
+        // 3. 动画结束（1秒）后渲染卦象
+        setTimeout(() => {
+            renderYao(currentTossSum);
+            hexagramSum += currentTossSum;
+            tossCount++;
+
+            if (tossCount === 6) {
+                btn.style.display = 'none';
+                setTimeout(showResult, 800);
+            } else {
+                btn.disabled = false;
+                btn.innerText = `点击起卦 (${tossCount}/6)`;
+            }
+        }, 1100); 
+    }
+
+    function renderYao(sum) {
+        const yaoDiv = document.createElement('div');
+        yaoDiv.className = 'yao';
+        let lineHtml = '';
+        let mark = '';
+
+        if (sum === 7 || sum === 9) { // 阳爻
+            lineHtml = `<div class="yang-line"></div>`;
+            if (sum === 9) mark = 'O'; 
+        } else { // 阴爻
+            lineHtml = `<div class="yin-line"><div class="yin-part"></div><div class="yin-part"></div></div>`;
+            if (sum === 6) mark = 'X'; 
+        }
+        yaoDiv.innerHTML = `${lineHtml}<div class="yao-mark">${mark}</div>`;
+        hexagramContainer.appendChild(yaoDiv);
+    }
+
+    function showResult() {
+        document.getElementById('coin-area').style.display = 'none';
+        let fortune = fortunes[hexagramSum % 5];
+        document.getElementById('luck-title').innerText = fortune.title;
+        document.getElementById('luck-desc').innerText = fortune.desc;
+        resultArea.style.display = 'block';
+    }
+
+    function resetGame() {
+        tossCount = 0;
+        hexagramSum = 0;
+        coinRotations = [0, 0, 0]; // 重置角度记录
+        hexagramContainer.innerHTML = '';
+        resultArea.style.display = 'none';
+        
+        document.getElementById('coin-area').style.display = 'flex';
+        btn.style.display = 'inline-block';
+        btn.disabled = false;
+        btn.innerText = '点击起卦 (0/6)';
+        
+        // 瞬间归位，不带动画
+        const inners = [document.getElementById('inner-1'), document.getElementById('inner-2'), document.getElementById('inner-3')];
+        inners.forEach(inner => {
+            inner.style.transition = 'none';
+            inner.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            void inner.offsetWidth; // 强制重绘
+            inner.style.transition = 'transform 1s cubic-bezier(0.25, 1, 0.5, 1)'; // 恢复动画属性
+        });
+    }
+</script>
+
+</body>
+</html>
