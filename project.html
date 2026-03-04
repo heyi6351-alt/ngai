@@ -20,7 +20,6 @@
             overflow-x: hidden;
         }
 
-        /* --- 顶部导航 --- */
         nav {
             position: fixed;
             top: 0;
@@ -37,57 +36,52 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             display: inline-block;
-            transition: opacity 0.3s;
+            border-bottom: 1px solid #fff;
+            padding-bottom: 4px;
         }
 
-        .back-link:hover { opacity: 0.6; }
-
-        /* --- 内容容器 --- */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 150px 40px;
         }
 
-        /* --- 标题区域 --- */
-        header {
-            margin-bottom: 100px;
-        }
+        header { margin-bottom: 100px; }
 
         .project-number {
             font-size: 14px;
             color: var(--accent-color);
             letter-spacing: 3px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             display: block;
         }
 
         h1 {
-            font-size: clamp(40px, 8vw, 80px); /* 响应式字体 */
+            font-size: clamp(40px, 8vw, 90px);
             font-weight: bold;
             letter-spacing: -2px;
-            line-height: 0.9;
-            margin-bottom: 30px;
+            line-height: 1.1;
+            margin-bottom: 40px;
+            text-transform: uppercase;
         }
 
         .meta-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 30px;
             border-top: 1px solid #333;
-            padding-top: 20px;
+            padding-top: 30px;
             color: var(--accent-color);
             text-transform: uppercase;
             font-size: 12px;
             letter-spacing: 1px;
         }
 
-        /* --- 滚动进入效果的样式 --- */
         .reveal {
             opacity: 0;
-            transform: translateY(50px);
+            transform: translateY(40px);
             transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-            margin-bottom: 80px;
+            margin-bottom: 60px;
         }
 
         .reveal.active {
@@ -95,40 +89,49 @@
             transform: translateY(0);
         }
 
-        /* --- 图片与文字排版 --- */
         .full-img {
             width: 100%;
             display: block;
             margin-bottom: 40px;
+            background-color: #111;
         }
 
         .text-block {
-            max-width: 700px;
-            margin: 100px 0;
+            max-width: 800px;
+            margin: 120px 0;
         }
 
-        .description {
-            font-size: 20px;
-            color: #ccc;
+        .description-zh {
+            font-size: 18px;
+            color: #eee;
+            margin-bottom: 30px;
+            text-align: justify;
+        }
+
+        .description-en {
+            font-size: 15px;
+            color: #777;
+            text-align: justify;
         }
 
         .img-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 40px;
+            gap: 20px;
         }
 
         footer {
             text-align: center;
-            padding: 100px 0;
+            padding: 120px 0;
             border-top: 1px solid #333;
         }
 
-        .next-project {
-            font-size: 24px;
+        .back-to-gallery {
+            font-size: 18px;
             text-decoration: none;
             color: #fff;
-            letter-spacing: 2px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
         }
 
         @media (max-width: 768px) {
@@ -146,62 +149,66 @@
 
     <div class="container">
         <header class="reveal">
-            <span class="project-number">01 / 12</span>
-            <h1>PROJECT<br>TITLE NAME</h1>
+            <span class="project-number">PROJECT 01 / 12</span>
+            <h1>“Dim Sum Card”<br>Calendar 2025</h1>
             <div class="meta-grid">
-                <div><span>Role:</span> Graphic Design</div>
-                <div><span>Year:</span> 2026</div>
-                <div><span>Type:</span> Brand Identity</div>
+                <div><span>Category:</span> Graphic / Cultural</div>
+                <div><span>Year:</span> 2025</div>
+                <div><span>Service:</span> Print & Concept</div>
             </div>
         </header>
 
         <section class="content">
             <div class="reveal">
-                <img src="p1.jpg" alt="Header Image" class="full-img">
+                <img src="project1_detail1.jpg" alt="Dim Sum Card Calendar" class="full-img">
             </div>
 
             <div class="reveal text-block">
-                <p class="description">
-                    这是你的作品介绍。你可以详细描述你的设计逻辑、色彩选择或是解决的痛点。
-                    平面设计的魅力在于细节，这里是你可以畅所欲言的地方。
+                <p class="description-zh">
+                    这款 2025 年日历以老式广式茶楼中经典的“点心卡”为设计灵感，将其转化为一张记录日常心情的卡片。
+                    每一天加盖一个印章，记录日期与当下心境。当岁末回首，那些点滴的情感与记忆便跃然纸上。
+                    随着传统点心卡逐渐被二维码取代，本设计旨在向这一消逝的文化符号致敬，并以当代视角重塑岭南生活的日常感。
+                </p>
+                <p class="description-en">
+                    Inspired by the classic dim sum cards from traditional Cantonese teahouses, this 2025 calendar functions as a daily mood record. 
+                    Users can stamp a mark each day to capture both the date and their emotional state. As digital ordering replaces physical icons, 
+                    this design pays tribute to a fading cultural symbol, reinterpreting the rhythmic daily life of Cantonese people.
                 </p>
             </div>
 
             <div class="reveal img-grid">
-                <img src="p1.jpg" alt="Detail 1" class="full-img">
-                <img src="p1.jpg" alt="Detail 2" class="full-img">
+                <img src="project1_detail2.jpg" alt="Detail View 01" class="full-img">
+                <img src="project1_detail3.jpg" alt="Detail View 02" class="full-img">
             </div>
 
             <div class="reveal">
-                <img src="p1.jpg" alt="Final View" class="full-img">
+                <img src="project1_detail4.jpg" alt="Process / Application" class="full-img">
+            </div>
+
+            <div class="reveal">
+                <img src="project1_detail5.jpg" alt="Final View" class="full-img">
             </div>
         </section>
 
         <footer class="reveal">
-            <a href="portfolio.html" class="next-project">BACK TO GALLERY</a>
+            <a href="portfolio.html" class="back-to-gallery">Close Project</a>
         </footer>
     </div>
 
     <script>
-        // --- 核心：滚动侦测逻辑 ---
         function reveal() {
             var reveals = document.querySelectorAll(".reveal");
             for (var i = 0; i < reveals.length; i++) {
                 var windowHeight = window.innerHeight;
                 var elementTop = reveals[i].getBoundingClientRect().top;
-                var elementVisible = 150; // 提前多少像素触发动画
-                
+                var elementVisible = 100;
                 if (elementTop < windowHeight - elementVisible) {
                     reveals[i].classList.add("active");
                 }
             }
         }
-
-        // 监听滚动事件
         window.addEventListener("scroll", reveal);
-
-        // 初始化执行一次，让首页能看到的元素直接显示
-        reveal();
+        reveal(); // 初始化
     </script>
 </body>
 </html>
