@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>3D 模型视角 | 形态自演变作品集</title>
+    <title>Ho Ngai | Portfolio</title>
     <style>
         :root {
-            --bg-color: #000000; /* 【修改点】：将背景颜色替换为纯黑色 */
-            --text-color: #eee;
+            --bg-color: #000000; 
+            --text-color: #ffffff;
             --item-width: 320px;
             --item-height: 240px;
         }
@@ -15,7 +15,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', Arial, sans-serif; }
 
         body {
-            background-color: var(--bg-color); /* 应用纯黑色背景 */
+            background-color: var(--bg-color); 
             color: var(--text-color);
             height: 100vh;
             overflow: hidden;
@@ -54,9 +54,9 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             background-color: #222;
             
-            /* 3秒平滑过渡，让形态变幻如呼吸般自然 */
+            /* 保持3秒的平滑过渡，配合7秒的变换频率 */
             transition: box-shadow 0.3s, filter 0.3s, transform 3s cubic-bezier(0.25, 1, 0.5, 1);
-            cursor: pointer; /* 提示用户可以点击 */
+            cursor: pointer; 
         }
 
         .item:hover {
@@ -82,28 +82,23 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+            
+            /* 差值混合模式：保证在图片划过时文字依然清晰且具有艺术感 */
+            mix-blend-mode: difference; 
+            color: #ffffff; 
         }
         
-        /* 【修改点】：将名字改为 Ho Ngai */
         .ui-panel h1 { 
             font-size: 28px; 
             font-weight: bold; 
             letter-spacing: 2px; 
             text-transform: uppercase; 
-            color: #ffffff; /* 纯白名字 */
             margin-bottom: 20px;
         }
         
-        /* 【修改点】：将灰字描述改为新的联系信息，并处理换行和前导空格 */
         .ui-panel .portfolio-description { 
             font-size: 14px; 
-            color: #bbbbbb; /* 灰联系信息 */
             line-height: 1.6;
-        }
-
-        /* 用于模拟前导空格 */
-        .portfolio-description span.mail-address {
-            margin-left: 0.5rem;
         }
 
         @media (max-width: 768px) {
@@ -116,12 +111,17 @@
 <body>
 
     <div class="ui-panel">
-        <h1>Ho Ngai</h1> <div class="portfolio-description"> <p>WECHAT</p>
+        <h1>Ho Ngai</h1> 
+        <div class="portfolio-description"> 
+            <p>WECHAT</p>
             <p>nga1ho</p>
-            <p>&nbsp;</p> <p>TEL</p>
+            <p>&nbsp;</p> 
+            <p>TEL</p>
             <p>+86 189 2663 1714</p>
-            <p>&nbsp;</p> <p>MAIL</p>
-            <p><span class="mail-address">1150648260@qq.com</span></p> </div>
+            <p>&nbsp;</p> 
+            <p>MAIL</p>
+            <p>1150648260@qq.com</p> 
+        </div>
     </div>
 
     <div class="world" id="world">
@@ -147,13 +147,11 @@
         const theta = 360 / itemCount; 
         const world = document.getElementById('world');
 
-        // --- 形态参数 ---
         let config = {
-            radius: 10,     // 初始展开距离
-            tilt: 0,        // 初始翻折角度
+            radius: 10,     
+            tilt: 0,        
         };
 
-        // 动态更新所有卡片的 3D 位置与形态
         function updateMorphology() {
             items.forEach((item, index) => {
                 const zOffset = index * 1; 
@@ -166,29 +164,22 @@
             });
         }
         
-        // 1. 初始化执行一次
         updateMorphology();
 
-        // 2. 每 15 秒触发一次随机形态变幻
+        // 【修改点】：变换频率缩短至 7000 毫秒（7秒）
         setInterval(() => {
-            // 生成 0 到 200 之间的随机展开半径
             config.radius = Math.floor(Math.random() * 200);
-            
-            // 生成 -60 度到 60 度之间的随机翻折角度
             config.tilt = Math.floor(Math.random() * 120) - 60;
-            
             updateMorphology();
-        }, 15000);
+        }, 7000); 
 
-        // --- 3D 视角与缩放交互逻辑 ---
         let isDragging = false;
         let startX, startY;
         let currentRotX = -15; 
         let currentRotY = 30; 
         let currentScale = 1;
-        const autoRotateSpeed = 0.15; // 固定自转速度
+        const autoRotateSpeed = 0.15; 
 
-        // 动画渲染引擎
         function animate() {
             if (!isDragging) {
                 currentRotY += autoRotateSpeed; 
@@ -198,7 +189,6 @@
         }
         animate();
 
-        // 拖拽控制
         document.addEventListener('pointerdown', (e) => {
             if(e.target.tagName.toLowerCase() === 'img') return;
             if(e.pointerType === 'touch' && !e.isPrimary) return; 
@@ -228,7 +218,6 @@
         document.addEventListener('pointerup', endDrag);
         document.addEventListener('pointercancel', endDrag);
 
-        // --- 滚轮 / 双指缩放 ---
         document.addEventListener('wheel', (e) => {
             currentScale -= e.deltaY * 0.002; 
             currentScale = Math.max(0.4, Math.min(3.5, currentScale)); 
