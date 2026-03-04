@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 01 | Ho Ngai Portfolio</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --text-color: #ffffff;
+            --accent-color: #888888;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', Arial, sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- 顶部导航 --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 40px;
+            z-index: 1000;
+            mix-blend-mode: difference;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #fff;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: inline-block;
+            transition: opacity 0.3s;
+        }
+
+        .back-link:hover { opacity: 0.6; }
+
+        /* --- 内容容器 --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 150px 40px;
+        }
+
+        /* --- 标题区域 --- */
+        header {
+            margin-bottom: 100px;
+        }
+
+        .project-number {
+            font-size: 14px;
+            color: var(--accent-color);
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        h1 {
+            font-size: clamp(40px, 8vw, 80px); /* 响应式字体 */
+            font-weight: bold;
+            letter-spacing: -2px;
+            line-height: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        /* --- 滚动进入效果的样式 --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+            margin-bottom: 80px;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- 图片与文字排版 --- */
+        .full-img {
+            width: 100%;
+            display: block;
+            margin-bottom: 40px;
+        }
+
+        .text-block {
+            max-width: 700px;
+            margin: 100px 0;
+        }
+
+        .description {
+            font-size: 20px;
+            color: #ccc;
+        }
+
+        .img-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 100px 0;
+            border-top: 1px solid #333;
+        }
+
+        .next-project {
+            font-size: 24px;
+            text-decoration: none;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 100px 20px; }
+            .img-grid { grid-template-columns: 1fr; }
+            nav { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="portfolio.html" class="back-link">← Gallery</a>
+    </nav>
+
+    <div class="container">
+        <header class="reveal">
+            <span class="project-number">01 / 12</span>
+            <h1>PROJECT<br>TITLE NAME</h1>
+            <div class="meta-grid">
+                <div><span>Role:</span> Graphic Design</div>
+                <div><span>Year:</span> 2026</div>
+                <div><span>Type:</span> Brand Identity</div>
+            </div>
+        </header>
+
+        <section class="content">
+            <div class="reveal">
+                <img src="p1.jpg" alt="Header Image" class="full-img">
+            </div>
+
+            <div class="reveal text-block">
+                <p class="description">
+                    这是你的作品介绍。你可以详细描述你的设计逻辑、色彩选择或是解决的痛点。
+                    平面设计的魅力在于细节，这里是你可以畅所欲言的地方。
+                </p>
+            </div>
+
+            <div class="reveal img-grid">
+                <img src="p1.jpg" alt="Detail 1" class="full-img">
+                <img src="p1.jpg" alt="Detail 2" class="full-img">
+            </div>
+
+            <div class="reveal">
+                <img src="p1.jpg" alt="Final View" class="full-img">
+            </div>
+        </section>
+
+        <footer class="reveal">
+            <a href="portfolio.html" class="next-project">BACK TO GALLERY</a>
+        </footer>
+    </div>
+
+    <script>
+        // --- 核心：滚动侦测逻辑 ---
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 150; // 提前多少像素触发动画
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+
+        // 监听滚动事件
+        window.addEventListener("scroll", reveal);
+
+        // 初始化执行一次，让首页能看到的元素直接显示
+        reveal();
+    </script>
+</body>
+</html>
