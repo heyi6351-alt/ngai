@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>3D 模型视角 | 形态自演变作品集</title>
+    <style>
+        :root {
+            --bg-color: #000000; /* 【修改点】：将背景颜色替换为纯黑色 */
+            --text-color: #eee;
+            --item-width: 320px;
+            --item-height: 240px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', Arial, sans-serif; }
+
+        body {
+            background-color: var(--bg-color); /* 应用纯黑色背景 */
+            color: var(--text-color);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 2000px; 
+            touch-action: none; 
+        }
+
+        .world {
+            position: relative;
+            transform-style: preserve-3d;
+            cursor: grab;
+        }
+        .world:active {
+            cursor: grabbing;
+        }
+
+        .model-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-style: preserve-3d;
+        }
+
+        .item {
+            position: absolute;
+            top: calc(var(--item-height) / -2);
+            left: 0;
+            width: var(--item-width);
+            height: var(--item-height);
+            transform-origin: left center; 
+            
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            background-color: #222;
+            
+            /* 3秒平滑过渡，让形态变幻如呼吸般自然 */
+            transition: box-shadow 0.3s, filter 0.3s, transform 3s cubic-bezier(0.25, 1, 0.5, 1);
+            cursor: pointer; /* 提示用户可以点击 */
+        }
+
+        .item:hover {
+            filter: brightness(1.2);
+            box-shadow: 0 10px 40px rgba(255,255,255,0.2);
+        }
+
+        .item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            pointer-events: none; 
+        }
+
+        /* --- 顶部信息面板 --- */
+        .ui-panel {
+            position: fixed;
+            top: 40px;
+            left: 40px;
+            z-index: 1000;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        /* 【修改点】：将名字改为 Ho Ngai */
+        .ui-panel h1 { 
+            font-size: 28px; 
+            font-weight: bold; 
+            letter-spacing: 2px; 
+            text-transform: uppercase; 
+            color: #ffffff; /* 纯白名字 */
+            margin-bottom: 20px;
+        }
+        
+        /* 【修改点】：将灰字描述改为新的联系信息，并处理换行和前导空格 */
+        .ui-panel .portfolio-description { 
+            font-size: 14px; 
+            color: #bbbbbb; /* 灰联系信息 */
+            line-height: 1.6;
+        }
+
+        /* 用于模拟前导空格 */
+        .portfolio-description span.mail-address {
+            margin-left: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            :root { --item-width: 200px; --item-height: 150px; }
+            .ui-panel { left: 20px; top: 20px; }
+            .ui-panel h1 { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ui-panel">
+        <h1>Ho Ngai</h1> <div class="portfolio-description"> <p>WECHAT</p>
+            <p>nga1ho</p>
+            <p>&nbsp;</p> <p>TEL</p>
+            <p>+86 189 2663 1714</p>
+            <p>&nbsp;</p> <p>MAIL</p>
+            <p><span class="mail-address">1150648260@qq.com</span></p> </div>
+    </div>
+
+    <div class="world" id="world">
+        <div class="model-center" id="model">
+            <div class="item" onclick="location.href='project1.html'"><img src="p1.jpg" alt="项目 1"></div>
+            <div class="item" onclick="location.href='project2.html'"><img src="p2.jpg" alt="项目 2"></div>
+            <div class="item" onclick="location.href='project3.html'"><img src="p3.jpg" alt="项目 3"></div>
+            <div class="item" onclick="location.href='project4.html'"><img src="p4.jpg" alt="项目 4"></div>
+            <div class="item" onclick="location.href='project5.html'"><img src="p5.jpg" alt="项目 5"></div>
+            <div class="item" onclick="location.href='project6.html'"><img src="p6.jpg" alt="项目 6"></div>
+            <div class="item" onclick="location.href='project7.html'"><img src="p7.jpg" alt="项目 7"></div>
+            <div class="item" onclick="location.href='project8.html'"><img src="p8.jpg" alt="项目 8"></div>
+            <div class="item" onclick="location.href='project9.html'"><img src="p9.jpg" alt="项目 9"></div>
+            <div class="item" onclick="location.href='project10.html'"><img src="p10.jpg" alt="项目 10"></div>
+            <div class="item" onclick="location.href='project11.html'"><img src="p11.jpg" alt="项目 11"></div>
+            <div class="item" onclick="location.href='project12.html'"><img src="p12.jpg" alt="项目 12"></div>
+        </div>
+    </div>
+
+    <script>
+        const items = document.querySelectorAll('.item');
+        const itemCount = items.length;
+        const theta = 360 / itemCount; 
+        const world = document.getElementById('world');
+
+        // --- 形态参数 ---
+        let config = {
+            radius: 10,     // 初始展开距离
+            tilt: 0,        // 初始翻折角度
+        };
+
+        // 动态更新所有卡片的 3D 位置与形态
+        function updateMorphology() {
+            items.forEach((item, index) => {
+                const zOffset = index * 1; 
+                item.style.transform = `
+                    rotateY(${theta * index}deg) 
+                    translateX(${config.radius}px) 
+                    translateZ(${zOffset}px) 
+                    rotateX(${config.tilt}deg)
+                `;
+            });
+        }
+        
+        // 1. 初始化执行一次
+        updateMorphology();
+
+        // 2. 每 15 秒触发一次随机形态变幻
+        setInterval(() => {
+            // 生成 0 到 200 之间的随机展开半径
+            config.radius = Math.floor(Math.random() * 200);
+            
+            // 生成 -60 度到 60 度之间的随机翻折角度
+            config.tilt = Math.floor(Math.random() * 120) - 60;
+            
+            updateMorphology();
+        }, 15000);
+
+        // --- 3D 视角与缩放交互逻辑 ---
+        let isDragging = false;
+        let startX, startY;
+        let currentRotX = -15; 
+        let currentRotY = 30; 
+        let currentScale = 1;
+        const autoRotateSpeed = 0.15; // 固定自转速度
+
+        // 动画渲染引擎
+        function animate() {
+            if (!isDragging) {
+                currentRotY += autoRotateSpeed; 
+            }
+            world.style.transform = `scale(${currentScale}) rotateX(${currentRotX}deg) rotateY(${currentRotY}deg)`;
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // 拖拽控制
+        document.addEventListener('pointerdown', (e) => {
+            if(e.target.tagName.toLowerCase() === 'img') return;
+            if(e.pointerType === 'touch' && !e.isPrimary) return; 
+            
+            isDragging = true; 
+            startX = e.clientX;
+            startY = e.clientY;
+        });
+
+        document.addEventListener('pointermove', (e) => {
+            if (!isDragging || (e.pointerType === 'touch' && !e.isPrimary)) return;
+            
+            let deltaX = e.clientX - startX;
+            let deltaY = e.clientY - startY;
+
+            currentRotY += deltaX * 0.4; 
+            currentRotX -= deltaY * 0.4; 
+
+            if (currentRotX > 85) currentRotX = 85;
+            if (currentRotX < -85) currentRotX = -85;
+
+            startX = e.clientX;
+            startY = e.clientY;
+        });
+
+        const endDrag = () => isDragging = false;
+        document.addEventListener('pointerup', endDrag);
+        document.addEventListener('pointercancel', endDrag);
+
+        // --- 滚轮 / 双指缩放 ---
+        document.addEventListener('wheel', (e) => {
+            currentScale -= e.deltaY * 0.002; 
+            currentScale = Math.max(0.4, Math.min(3.5, currentScale)); 
+        }, { passive: true }); 
+
+        let initialPinchDistance = 0;
+        let startScale = 1;
+
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                isDragging = false; 
+                initialPinchDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                startScale = currentScale;
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault(); 
+                const currentPinchDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                const scaleFactor = currentPinchDistance / initialPinchDistance;
+                currentScale = startScale * scaleFactor;
+                currentScale = Math.max(0.4, Math.min(3.5, currentScale));
+            }
+        }, { passive: false });
+
+    </script>
+</body>
+</html>
